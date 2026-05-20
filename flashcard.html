@@ -405,6 +405,21 @@
     }
     .deck-name-input:focus { border-bottom-color: var(--blue); box-shadow: none; }
 
+    .btn-clear {
+      background: transparent;
+      border: 1px solid rgba(255,45,120,.35);
+      color: rgba(255,45,120,.6);
+      font-family: 'Orbitron', monospace; font-size: 10px;
+      font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 9px 20px; border-radius: 10px; cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-clear:hover {
+      border-color: var(--pink); color: var(--pink);
+      background: rgba(255,45,120,.08);
+      box-shadow: 0 0 20px rgba(255,45,120,.25);
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -619,6 +634,11 @@ function renderHome() {
         <div class="empty-text">尚無卡片組<br>建立第一個開始練習吧！</div>
       </div>
     `}
+
+    <div class="divider"></div>
+    <div style="text-align:center;">
+      <button class="btn btn-clear" onclick="clearAllData()">⚠ 清除所有資料</button>
+    </div>
   `;
 }
 
@@ -815,6 +835,18 @@ function render() {
   else if (state.view === 'edit')     app.innerHTML = renderEdit();
   else if (state.view === 'practice') app.innerHTML = renderPractice();
   bindEvents();
+}
+
+// ═══════════════════════════════════
+//  CLEAR ALL DATA
+// ═══════════════════════════════════
+function clearAllData() {
+  if (!confirm('確定要清除所有卡片組與卡片資料？\n此操作無法復原。')) return;
+  localStorage.removeItem('y2k_flashcards_v1');
+  state.decks = [];
+  state.activeDeckId = null;
+  state.view = 'home';
+  render();
 }
 
 // ═══════════════════════════════════
