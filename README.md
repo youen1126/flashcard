@@ -27,5 +27,5 @@ Y2K 美學：Chrome 金屬漸層、CRT 掃描線、霓虹發光按鈕、玻璃�
 
 ## 作者
 
-**UN** — 版權所有 © 2025  
+**UN** — 版權所有 © 2026  
 聯絡信箱：[youen32020320@gmail.com](mailto:youen32020320@gmail.com)
