@@ -462,6 +462,23 @@
     }
     .grid-card-text { font-size: 13px; line-height: 1.55; font-weight: 500; white-space: pre-wrap; word-break: break-word; }
 
+    .btn-speak {
+      background: rgba(184,255,0,.08);
+      border: 1px solid rgba(184,255,0,.3);
+      color: var(--lime); border-radius: 10px; cursor: pointer;
+      font-size: 16px; padding: 8px 18px; transition: all .2s;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 1px;
+    }
+    .btn-speak:hover { background: rgba(184,255,0,.18); box-shadow: 0 0 18px rgba(184,255,0,.25); }
+
+    .grid-speak {
+      margin-top: 10px; background: transparent; border: none;
+      color: rgba(255,255,255,.3); font-size: 14px; cursor: pointer;
+      transition: color .2s; padding: 2px 6px; border-radius: 6px;
+    }
+    .grid-speak:hover { color: var(--lime); }
+
     .btn-clear {
       background: transparent;
       border: 1px solid rgba(255,45,120,.35);
@@ -836,10 +853,12 @@ function renderPractice() {
                 <div class="grid-face grid-face-front">
                   <div class="grid-card-label">正面</div>
                   <div class="grid-card-text">${escHtml(c.front) || '<span style="opacity:.25;">(空白)</span>'}</div>
+                  ${c.front ? `<button class="grid-speak" onclick="event.stopPropagation();speak('${escHtml(c.front).replace(/'/g,"\\'")}')">🔊</button>` : ''}
                 </div>
                 <div class="grid-face grid-face-back">
                   <div class="grid-card-label" style="color:rgba(255,45,120,.5);">背面</div>
                   <div class="grid-card-text">${escHtml(c.back) || '<span style="opacity:.25;">(空白)</span>'}</div>
+                  ${c.back ? `<button class="grid-speak" onclick="event.stopPropagation();speak('${escHtml(c.back).replace(/'/g,"\\'")}')">🔊</button>` : ''}
                 </div>
               </div>
             </div>
@@ -880,6 +899,10 @@ function renderPractice() {
             <div class="flip-hint" style="color:rgba(255,45,120,.5);">點擊翻回正面 ✦</div>
           </div>
         </div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:14px;">
+        <button class="btn-speak" onclick="speakCurrent()">🔊 朗讀</button>
       </div>
 
       <div class="practice-controls">
@@ -931,6 +954,21 @@ function render() {
   else if (state.view === 'edit')     app.innerHTML = renderEdit();
   else if (state.view === 'practice') app.innerHTML = renderPractice();
   bindEvents();
+}
+
+// ═══════════════════════════════════
+//  SPEECH
+// ═══════════════════════════════════
+function speak(text) {
+  if (!text || !text.trim()) return;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text.trim()));
+}
+function speakCurrent() {
+  const cards = getPracticeCards();
+  const card = cards[state.practiceIdx];
+  if (!card) return;
+  speak(state.isFlipped ? card.back : card.front);
 }
 
 // ═══════════════════════════════════
