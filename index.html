@@ -398,6 +398,15 @@
     .complete-sub { color: rgba(255,255,255,.4); font-size: 14px; margin-bottom: 30px; }
     .complete-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
+    .lang-select {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px; padding: 6px 10px; color: rgba(255,255,255,.7);
+      font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 1px;
+      cursor: pointer; outline: none; transition: all .2s;
+    }
+    .lang-select:focus { border-color: var(--blue); color: #fff; }
+    .lang-select option { background: #1a0030; color: #fff; }
+
     /* Deck name inline edit in edit view */
     .deck-name-input {
       background: transparent; border: none; border-bottom: 1px solid rgba(0,207,255,.4);
@@ -587,7 +596,7 @@ function goPractice(id) {
 // ═══════════════════════════════════
 function createDeck(name) {
   if (!name.trim()) return;
-  state.decks.push({ id: uid(), name: name.trim(), cards: [] });
+  state.decks.push({ id: uid(), name: name.trim(), lang: '', cards: [] });
   save(); render();
 }
 function deleteDeck(id) {
@@ -598,6 +607,10 @@ function deleteDeck(id) {
 function updateDeckName(id, val) {
   const d = state.decks.find(d => d.id === id);
   if (d) { d.name = val; save(); }
+}
+function updateDeckLang(id, val) {
+  const d = state.decks.find(d => d.id === id);
+  if (d) { d.lang = val; save(); }
 }
 
 // ═══════════════════════════════════
@@ -736,6 +749,9 @@ function renderEdit() {
             oninput="updateDeckName('${deck.id}', this.value)"
             aria-label="卡片組名稱" />
         </div>
+        <select class="lang-select" onchange="updateDeckLang('${deck.id}', this.value)" title="朗讀語言">
+          ${LANGS.map(l => `<option value="${l.code}" ${(deck.lang||'') === l.code ? 'selected' : ''}>${l.label}</option>`).join('')}
+        </select>
         ${deck.cards.length > 0 ? `
           <button class="btn btn-pink btn-sm" onclick="goPractice('${deck.id}')">練習 ▶</button>
         ` : ''}
@@ -853,12 +869,12 @@ function renderPractice() {
                 <div class="grid-face grid-face-front">
                   <div class="grid-card-label">正面</div>
                   <div class="grid-card-text">${escHtml(c.front) || '<span style="opacity:.25;">(空白)</span>'}</div>
-                  ${c.front ? `<button class="grid-speak" onclick="event.stopPropagation();speak('${escHtml(c.front).replace(/'/g,"\\'")}')">🔊</button>` : ''}
+                  ${c.front ? `<button class="grid-speak" onclick="event.stopPropagation();speakCard('${c.id}','front')">🔊</button>` : ''}
                 </div>
                 <div class="grid-face grid-face-back">
                   <div class="grid-card-label" style="color:rgba(255,45,120,.5);">背面</div>
                   <div class="grid-card-text">${escHtml(c.back) || '<span style="opacity:.25;">(空白)</span>'}</div>
-                  ${c.back ? `<button class="grid-speak" onclick="event.stopPropagation();speak('${escHtml(c.back).replace(/'/g,"\\'")}')">🔊</button>` : ''}
+                  ${c.back ? `<button class="grid-speak" onclick="event.stopPropagation();speakCard('${c.id}','back')">🔊</button>` : ''}
                 </div>
               </div>
             </div>
@@ -959,16 +975,35 @@ function render() {
 // ═══════════════════════════════════
 //  SPEECH
 // ═══════════════════════════════════
-function speak(text) {
+const LANGS = [
+  { code: '',      label: '自動偵測' },
+  { code: 'zh-TW', label: '中文（繁體）' },
+  { code: 'zh-CN', label: '中文（簡體）' },
+  { code: 'en-US', label: 'English' },
+  { code: 'ja-JP', label: '日本語' },
+  { code: 'ko-KR', label: '한국어' },
+  { code: 'fr-FR', label: 'Français' },
+  { code: 'de-DE', label: 'Deutsch' },
+  { code: 'es-ES', label: 'Español' },
+];
+function speak(text, lang) {
   if (!text || !text.trim()) return;
   speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(text.trim()));
+  const u = new SpeechSynthesisUtterance(text.trim());
+  if (lang) u.lang = lang;
+  speechSynthesis.speak(u);
 }
 function speakCurrent() {
+  const deck = getDeck();
   const cards = getPracticeCards();
   const card = cards[state.practiceIdx];
   if (!card) return;
-  speak(state.isFlipped ? card.back : card.front);
+  speak(state.isFlipped ? card.back : card.front, deck.lang || '');
+}
+function speakCard(cardId, face) {
+  const deck = getDeck();
+  const card = deck.cards.find(c => c.id === cardId);
+  if (card) speak(card[face], deck.lang || '');
 }
 
 // ═══════════════════════════════════
