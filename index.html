@@ -417,34 +417,43 @@
     .deck-name-input:focus { border-bottom-color: var(--blue); box-shadow: none; }
 
     /* Feature grid */
-    .feature-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 12px; margin-bottom: 28px;
+    .feature-section-label {
+      font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 3px;
+      color: rgba(255,255,255,.35); text-transform: uppercase;
+      text-align: center; margin-bottom: 12px;
     }
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; margin-bottom: 28px;
+    }
+    @media (max-width: 540px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
     .feature-card {
       background: var(--glass); border: 1px solid rgba(255,255,255,.1);
-      border-radius: 16px; padding: 20px 18px; text-align: center;
-      transition: all .22s; position: relative; overflow: hidden;
-    }
-    .feature-card::before {
-      content: ''; position: absolute; inset: 0; border-radius: 16px;
-      background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.06), transparent 70%);
-      pointer-events: none;
+      border-radius: 14px; padding: 16px 10px; text-align: center;
+      cursor: pointer; transition: border-color .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
     }
     .feature-card::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-      background: var(--accent); opacity: .5; border-radius: 0 0 16px 16px;
-      transition: opacity .22s;
+      background: var(--accent); opacity: .4; border-radius: 0 0 14px 14px;
+      transition: opacity .2s;
     }
-    .feature-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.3); }
+    .feature-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,0,0,.25); }
     .feature-card:hover::after { opacity: 1; }
-    .feature-icon { font-size: 28px; margin-bottom: 10px; }
+    .feature-icon { font-size: 22px; margin-bottom: 8px; }
     .feature-title {
-      font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700;
-      letter-spacing: 1.5px; color: var(--accent); margin-bottom: 7px;
-      text-shadow: 0 0 12px var(--accent);
+      font-family: 'Orbitron', monospace; font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; color: var(--accent); margin-bottom: 6px;
+      text-shadow: 0 0 10px var(--accent);
     }
-    .feature-desc { font-size: 12px; color: rgba(255,255,255,.45); line-height: 1.7; }
+    .feature-desc { font-size: 11px; color: rgba(255,255,255,.38); line-height: 1.65; }
+
+    @keyframes input-pulse {
+      0%   { border-color: var(--lime); box-shadow: 0 0 0 0 rgba(184,255,0,.7), 0 0 24px rgba(184,255,0,.4); }
+      60%  { border-color: var(--lime); box-shadow: 0 0 0 10px rgba(184,255,0,0), 0 0 24px rgba(184,255,0,.15); }
+      100% { border-color: rgba(255,255,255,.18); box-shadow: none; }
+    }
+    .input-pulse { animation: input-pulse 1.4s ease-out forwards; }
 
     /* Mode tabs */
     .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
@@ -721,23 +730,24 @@ function renderHome() {
       </div>
     </div>
 
+    <p class="feature-section-label">✦ 本工具特色 ✦</p>
     <div class="feature-grid">
-      <div class="feature-card" style="--accent:var(--blue);">
+      <div class="feature-card" style="--accent:var(--blue);" onclick="highlightInput()">
         <div class="feature-icon">🃏</div>
         <div class="feature-title">自由填寫</div>
         <div class="feature-desc">問答、單字、論述題<br>正反面不限格式</div>
       </div>
-      <div class="feature-card" style="--accent:var(--pink);">
+      <div class="feature-card" style="--accent:var(--pink);" onclick="highlightInput()">
         <div class="feature-icon">⊞</div>
         <div class="feature-title">網格總覽</div>
         <div class="feature-desc">一次看全部卡片<br>熟的直接跳過</div>
       </div>
-      <div class="feature-card" style="--accent:var(--lime);">
+      <div class="feature-card" style="--accent:var(--lime);" onclick="highlightInput()">
         <div class="feature-icon">🔊</div>
         <div class="feature-title">多語朗讀</div>
         <div class="feature-desc">中英日韓法德西<br>七種語言語音支援</div>
       </div>
-      <div class="feature-card" style="--accent:var(--purple);">
+      <div class="feature-card" style="--accent:var(--purple);" onclick="highlightInput()">
         <div class="feature-icon">💾</div>
         <div class="feature-title">自動儲存</div>
         <div class="feature-desc">資料存在瀏覽器<br>關掉也不會遺失</div>
@@ -1023,6 +1033,19 @@ function render() {
   else if (state.view === 'edit')     app.innerHTML = renderEdit();
   else if (state.view === 'practice') app.innerHTML = renderPractice();
   bindEvents();
+}
+
+// ═══════════════════════════════════
+//  HIGHLIGHT INPUT
+// ═══════════════════════════════════
+function highlightInput() {
+  const inp = document.getElementById('new-deck-input');
+  if (!inp) return;
+  inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  inp.classList.remove('input-pulse');
+  void inp.offsetWidth;
+  inp.classList.add('input-pulse');
+  inp.focus();
 }
 
 // ═══════════════════════════════════
