@@ -416,6 +416,36 @@
     }
     .deck-name-input:focus { border-bottom-color: var(--blue); box-shadow: none; }
 
+    /* Feature grid */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 12px; margin-bottom: 28px;
+    }
+    .feature-card {
+      background: var(--glass); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px; padding: 20px 18px; text-align: center;
+      transition: all .22s; position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: 16px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.06), transparent 70%);
+      pointer-events: none;
+    }
+    .feature-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--accent); opacity: .5; border-radius: 0 0 16px 16px;
+      transition: opacity .22s;
+    }
+    .feature-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.3); }
+    .feature-card:hover::after { opacity: 1; }
+    .feature-icon { font-size: 28px; margin-bottom: 10px; }
+    .feature-title {
+      font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700;
+      letter-spacing: 1.5px; color: var(--accent); margin-bottom: 7px;
+      text-shadow: 0 0 12px var(--accent);
+    }
+    .feature-desc { font-size: 12px; color: rgba(255,255,255,.45); line-height: 1.7; }
+
     /* Mode tabs */
     .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
     .mode-tab {
@@ -688,6 +718,29 @@ function renderHome() {
         <span class="blink star-lime">✶</span>
         自製卡片 &nbsp;·&nbsp; 自我挑戰
         <span class="blink star-lime" style="animation-delay:.9s">✶</span>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card" style="--accent:var(--blue);">
+        <div class="feature-icon">🃏</div>
+        <div class="feature-title">自由填寫</div>
+        <div class="feature-desc">問答、單字、論述題<br>正反面不限格式</div>
+      </div>
+      <div class="feature-card" style="--accent:var(--pink);">
+        <div class="feature-icon">⊞</div>
+        <div class="feature-title">網格總覽</div>
+        <div class="feature-desc">一次看全部卡片<br>熟的直接跳過</div>
+      </div>
+      <div class="feature-card" style="--accent:var(--lime);">
+        <div class="feature-icon">🔊</div>
+        <div class="feature-title">多語朗讀</div>
+        <div class="feature-desc">中英日韓法德西<br>七種語言語音支援</div>
+      </div>
+      <div class="feature-card" style="--accent:var(--purple);">
+        <div class="feature-icon">💾</div>
+        <div class="feature-title">自動儲存</div>
+        <div class="feature-desc">資料存在瀏覽器<br>關掉也不會遺失</div>
       </div>
     </div>
 
